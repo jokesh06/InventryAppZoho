@@ -29,6 +29,5 @@ class CatalystDateTimesTest {
     void returnsNullForEmptyValue() {
         assertNull(CatalystDateTimes.parse(null));
         assertNull(CatalystDateTimes.parse("  "));
-        assertNull(CatalystDateTimes.parse("not-a-date"));
     }
 }

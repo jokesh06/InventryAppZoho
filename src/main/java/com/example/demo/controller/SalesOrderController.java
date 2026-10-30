@@ -1,7 +1,5 @@
 package com.example.demo.controller;
 
-import java.util.List;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -23,9 +21,7 @@ import com.example.demo.dto.SalesOrderItemResponse;
 import com.example.demo.dto.SalesOrderResponse;
 import com.example.demo.dto.ShipOrderRequest;
 import com.example.demo.entity.InventoryMovement;
-import com.example.demo.entity.Product;
 import com.example.demo.entity.SalesOrder;
-import com.example.demo.entity.SalesOrderItem;
 import com.example.demo.entity.User;
 import com.example.demo.repository.SalesOrderRepository;
 import com.example.demo.service.SalesOrderService;
@@ -108,39 +104,24 @@ public class SalesOrderController {
     }
 
     private SalesOrderResponse mapToDetailedResponse(SalesOrder order) {
-        Long warehouseId = order.getWarehouse() == null
-                ? null
-                : order.getWarehouse().getId();
-        String warehouseName = order.getWarehouse() == null
-                ? null
-                : order.getWarehouse().getName();
-        List<SalesOrderItem> items = order.getItems() == null
-                ? List.of()
-                : order.getItems();
-
         return SalesOrderResponse.builder()
                 .id(order.getId())
                 .orderNumber(order.getOrderNumber())
                 .customerName(order.getCustomerName())
                 .customerEmail(order.getCustomerEmail())
-                .warehouseId(warehouseId)
-                .warehouseName(warehouseName)
-                .status(order.getStatus() == null
-                        ? SalesOrder.OrderStatus.DRAFT.name()
-                        : order.getStatus().name())
+                .warehouseId(order.getWarehouse().getId())
+                .warehouseName(order.getWarehouse().getName())
+                .status(order.getStatus().name())
                 .totalAmount(order.getTotalAmount())
-                .items(items.stream().map(item -> {
-                    Product product = item.getProduct();
-                    return SalesOrderItemResponse.builder()
+                .items(order.getItems().stream().map(item -> SalesOrderItemResponse.builder()
                         .id(item.getId())
-                        .productId(product == null ? null : product.getId())
-                        .productSku(product == null ? null : product.getSku())
-                        .productName(product == null ? null : product.getName())
+                        .productId(item.getProduct().getId())
+                        .productSku(item.getProduct().getSku())
+                        .productName(item.getProduct().getName())
                         .quantity(item.getQuantity())
                         .unitPriceSnapshot(item.getUnitPriceSnapshot())
                         .subtotal(item.getSubtotal())
-                        .build();
-                }).toList())
+                        .build()).toList())
                 .createdAt(order.getCreatedAt())
                 .build();
     }

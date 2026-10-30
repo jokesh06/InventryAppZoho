@@ -109,12 +109,8 @@ public class InventoryBalanceRepository {
                         .build();
 
                 if (loadRelations) {
-                    if (warehouseId != null) {
-                        warehouse = findWarehouseByRowId(warehouseId);
-                    }
-                    if (productId != null) {
-                        product = findProductByRowId(productId);
-                    }
+                    warehouse = findWarehouseByRowId(warehouseId);
+                    product = findProductByRowId(productId);
                 }
 
                 InventoryBalance balance = InventoryBalance.builder()
@@ -149,20 +145,22 @@ public class InventoryBalanceRepository {
                     ZCQL.getInstance().executeQuery(query);
 
             if (rows == null || rows.isEmpty()) {
-                return Warehouse.builder().id(warehouseId).build();
+                throw new RuntimeException(
+                        "Warehouse not found: " + warehouseId);
             }
 
             ZCRowObject row = rows.get(0);
 
             return Warehouse.builder()
                     .id(toLong(row.get("ROWID")))
-                    .code(toStringValue(row.get("code")))
-                    .name(toStringValue(row.get("name")))
-                    .address(toStringValue(row.get("address")))
-                    .city(toStringValue(row.get("city")))
-                    .state(toStringValue(row.get("state")))
-                    .country(toStringValue(row.get("country")))
-                    .status(parseWarehouseStatus(row.get("status")))
+                    .code((String) row.get("code"))
+                    .name((String) row.get("name"))
+                    .address((String) row.get("address"))
+                    .city((String) row.get("city"))
+                    .state((String) row.get("state"))
+                    .country((String) row.get("country"))
+                    .status(Warehouse.Status.valueOf(
+                            row.get("status").toString()))
                     .build();
 
         } catch (Exception e) {
@@ -182,16 +180,17 @@ public class InventoryBalanceRepository {
                     ZCQL.getInstance().executeQuery(query);
 
             if (rows == null || rows.isEmpty()) {
-                return Product.builder().id(productId).build();
+                throw new RuntimeException(
+                        "Product not found: " + productId);
             }
 
             ZCRowObject row = rows.get(0);
 
             return Product.builder()
                     .id(toLong(row.get("ROWID")))
-                    .sku(toStringValue(row.get("sku")))
-                    .name(toStringValue(row.get("name")))
-                    .description(toStringValue(row.get("description")))
+                    .sku((String) row.get("sku"))
+                    .name((String) row.get("name"))
+                    .description((String) row.get("description"))
                     .unitSellingPrice(toBigDecimal(
                             row.get("unit_selling_price")))
                     .reorderLevel(toInteger(row.get("reorder_level")))
@@ -205,21 +204,6 @@ public class InventoryBalanceRepository {
     }
 
     // Conversion methods
-    private Warehouse.Status parseWarehouseStatus(Object value) {
-        if (value == null || value.toString().isBlank()) {
-            return null;
-        }
-        try {
-            return Warehouse.Status.valueOf(value.toString().trim().toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            return null;
-        }
-    }
-
-    private String toStringValue(Object value) {
-        return value == null ? null : value.toString();
-    }
-
     private Long toLong(Object value) {
         return value == null ? null : Long.valueOf(value.toString());
     }

@@ -358,7 +358,11 @@ Pageable pageable = PageRequest.of(
             createdBy.setId(createdByUserId);
         }
 
-        OrderStatus status = parseOrderStatus(toStringValue(row.get("status")));
+        String statusValue = toStringValue(row.get("status"));
+
+        OrderStatus status = statusValue == null
+                ? OrderStatus.DRAFT
+                : OrderStatus.valueOf(statusValue.toUpperCase());
 
         return SalesOrder.builder()
                 .id(toLong(row.get("ROWID")))
@@ -401,21 +405,6 @@ Pageable pageable = PageRequest.of(
 
     private LocalDateTime toDateTime(Object value) {
         return CatalystDateTimes.parse(value);
-    }
-
-    private OrderStatus parseOrderStatus(String statusValue) {
-        if (statusValue == null || statusValue.isBlank()) {
-            return OrderStatus.DRAFT;
-        }
-        String normalized = statusValue.trim()
-                .toUpperCase()
-                .replace(' ', '_')
-                .replace('-', '_');
-        try {
-            return OrderStatus.valueOf(normalized);
-        } catch (IllegalArgumentException ex) {
-            return OrderStatus.DRAFT;
-        }
     }
     public Optional<SalesOrder> findById(Long id) {
 
