@@ -580,16 +580,14 @@ private POStatus parsePOStatus(String statusValue) {
         return POStatus.DRAFT;
     }
 
+    String normalized = statusValue.trim()
+            .toUpperCase(Locale.ROOT)
+            .replace(' ', '_')
+            .replace('-', '_');
     try {
-        return POStatus.valueOf(
-                statusValue.trim().toUpperCase(Locale.ROOT)
-        );
+        return POStatus.valueOf(normalized);
     } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException(
-                "Invalid purchase order status in Catalyst: "
-                        + statusValue,
-                e
-        );
+        return POStatus.DRAFT;
     }
 }
 

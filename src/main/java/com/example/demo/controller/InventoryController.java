@@ -281,31 +281,23 @@ public class InventoryController {
             InventoryBalance balance) {
 
         if (balance.getWarehouse() == null
-                || balance.getWarehouse().getId() == null
-                || balance.getProduct() == null
-                || balance.getProduct().getId() == null) {
+                || balance.getWarehouse().getId() == null) {
 
             throw new IllegalStateException(
-                    "Inventory balance has missing Warehouse or Product reference");
+                    "Inventory balance has no warehouse reference");
         }
 
-        // Load complete warehouse information
         Long warehouseId = balance.getWarehouse().getId();
 
         Warehouse warehouse =
                 warehouseRepository.findById(warehouseId)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Warehouse not found: " + warehouseId));
+                        .orElse(balance.getWarehouse());
 
-        // Load complete product information
-        Long productId = balance.getProduct().getId();
-
-        Product product =
-                productRepository.findById(productId)
-                        .orElseThrow(() ->
-                                new ResourceNotFoundException(
-                                        "Product not found: " + productId));
+        Product product = balance.getProduct();
+        if (product != null && product.getId() != null) {
+            product = productRepository.findById(product.getId())
+                    .orElse(product);
+        }
 
         balance.setWarehouse(warehouse);
         balance.setProduct(product);
@@ -315,9 +307,9 @@ public class InventoryController {
                 .warehouseId(warehouse.getId())
                 .warehouseCode(warehouse.getCode())
                 .warehouseName(warehouse.getName())
-                .productId(product.getId())
-                .productSku(product.getSku())
-                .productName(product.getName())
+                .productId(product == null ? null : product.getId())
+                .productSku(product == null ? null : product.getSku())
+                .productName(product == null ? null : product.getName())
                 .onHandQty(getQty(balance.getOnHandQty()))
                 .reservedQty(getQty(balance.getReservedQty()))
                 .availableQty(balance.getAvailableQty())

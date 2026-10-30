@@ -93,6 +93,10 @@ public final class CatalystDateTimes {
             iso = iso.substring(0, lastColon) + "." + iso.substring(lastColon + 1);
         }
 
-        return LocalDateTime.parse(iso);
+        try {
+            return LocalDateTime.parse(iso);
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

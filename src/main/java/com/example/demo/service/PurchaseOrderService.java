@@ -383,33 +383,47 @@ public class PurchaseOrderService {
     // 6. Convert Purchase Order entity into response DTO
     public PurchaseOrderResponse mapToResponse(PurchaseOrder po) {
 
+        Supplier supplier = po.getSupplier();
+        Warehouse warehouse = po.getDestinationWarehouse();
+        List<PurchaseOrderItem> items = po.getItems() == null
+                ? List.of()
+                : po.getItems();
+
         return PurchaseOrderResponse.builder()
                 .id(po.getId())
                 .poNumber(po.getPoNumber())
-                .supplierId(po.getSupplier().getId())
-                .supplierName(po.getSupplier().getName())
+                .supplierId(supplier == null ? null : supplier.getId())
+                .supplierName(supplier == null ? null : supplier.getName())
                 .destinationWarehouseId(
-                        po.getDestinationWarehouse().getId())
+                        warehouse == null ? null : warehouse.getId())
                 .destinationWarehouseName(
-                        po.getDestinationWarehouse().getName())
-                .status(po.getStatus().name())
+                        warehouse == null ? null : warehouse.getName())
+                .status(po.getStatus() == null
+                        ? PurchaseOrder.POStatus.DRAFT.name()
+                        : po.getStatus().name())
                 .totalAmount(po.getTotalAmount())
-                .items(po.getItems().stream()
-                        .map(item ->
-                                PurchaseOrderItemResponse.builder()
+                .items(items.stream()
+                        .map(item -> {
+                            Product product = item.getProduct();
+                            BigDecimal unitCost = item.getUnitCost() == null
+                                    ? BigDecimal.ZERO
+                                    : item.getUnitCost();
+                            int orderedQty = item.getOrderedQty() == null
+                                    ? 0
+                                    : item.getOrderedQty();
+                            return PurchaseOrderItemResponse.builder()
                                         .id(item.getId())
-                                        .productId(item.getProduct().getId())
-                                        .productSku(item.getProduct().getSku())
-                                        .productName(item.getProduct().getName())
+                                        .productId(product == null ? null : product.getId())
+                                        .productSku(product == null ? null : product.getSku())
+                                        .productName(product == null ? null : product.getName())
                                         .orderedQty(item.getOrderedQty())
                                         .receivedQty(item.getReceivedQty())
                                         .remainingQty(item.getRemainingQty())
                                         .unitCost(item.getUnitCost())
-                                        .lineTotal(
-                                                item.getUnitCost().multiply(
-                                                        BigDecimal.valueOf(
-                                                                item.getOrderedQty())))
-                                        .build())
+                                        .lineTotal(unitCost.multiply(
+                                                BigDecimal.valueOf(orderedQty)))
+                                        .build();
+                        })
                         .toList())
                 .createdAt(po.getCreatedAt())
                 .updatedAt(po.getUpdatedAt())

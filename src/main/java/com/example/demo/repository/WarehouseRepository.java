@@ -2,7 +2,6 @@
 package com.example.demo.repository;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.Warehouse;
 import com.example.demo.entity.Warehouse.Status;
+import com.example.demo.util.CatalystDateTimes;
 
 import com.zc.component.object.ZCRowObject;
 import com.zc.component.zcql.ZCQL;
@@ -21,9 +21,6 @@ public class WarehouseRepository {
     private static final String TABLE_NAME = "warehouses";
 
     private static final int BATCH_SIZE = 300;
-
-    private static final DateTimeFormatter CATALYST_DATE_FORMAT =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss:SSS");
 
     // 1. Find warehouse using code
     public Optional<Warehouse> findByCode(String code) {
@@ -154,33 +151,7 @@ public class WarehouseRepository {
 
     // Convert Catalyst timestamp into LocalDateTime
     private LocalDateTime toDateTime(Object value) {
-
-        if (value == null) {
-            return null;
-        }
-
-        if (value instanceof LocalDateTime) {
-            return (LocalDateTime) value;
-        }
-
-        String dateValue = value.toString().trim();
-
-        try {
-            return LocalDateTime.parse(dateValue);
-        } catch (Exception ignored) {
-            // Try Catalyst timestamp with milliseconds.
-        }
-
-        try {
-            return LocalDateTime.parse(
-                    dateValue, CATALYST_DATE_FORMAT);
-        } catch (Exception ignored) {
-            // Try Catalyst timestamp without milliseconds.
-        }
-
-        return LocalDateTime.parse(
-                dateValue,
-                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        return CatalystDateTimes.parse(value);
     }
     public Optional<Warehouse> findById(Long id) {
 

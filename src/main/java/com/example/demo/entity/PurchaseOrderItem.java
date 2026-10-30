@@ -27,6 +27,8 @@ public class PurchaseOrderItem {
     private BigDecimal unitCost;
 
     public Integer getRemainingQty() {
-        return this.orderedQty - this.receivedQty;
+        int ordered = this.orderedQty == null ? 0 : this.orderedQty;
+        int received = this.receivedQty == null ? 0 : this.receivedQty;
+        return ordered - received;
     }
 }

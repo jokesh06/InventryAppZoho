@@ -30,6 +30,8 @@ public class InventoryBalance {
     private LocalDateTime updatedAt;
 
     public Integer getAvailableQty() {
-        return this.onHandQty - this.reservedQty;
+        int onHand = this.onHandQty == null ? 0 : this.onHandQty;
+        int reserved = this.reservedQty == null ? 0 : this.reservedQty;
+        return onHand - reserved;
     }
 }
