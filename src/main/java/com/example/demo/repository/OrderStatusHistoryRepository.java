@@ -1,9 +1,7 @@
 
 package com.example.demo.repository;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.example.demo.entity.OrderStatusHistory;
 import com.example.demo.entity.SalesOrder;
 import com.example.demo.entity.User;
+import com.example.demo.util.CatalystDateTimes;
 
 import com.zc.component.object.ZCRowObject;
 import com.zc.component.zcql.ZCQL;
@@ -184,38 +183,6 @@ public class OrderStatusHistoryRepository {
     }
 
     private LocalDateTime toDateTime(Object value) {
-
-        if (value == null) {
-            return null;
-        }
-
-        if (value instanceof LocalDateTime) {
-            return (LocalDateTime) value;
-        }
-
-        if (value instanceof Timestamp) {
-            return ((Timestamp) value).toLocalDateTime();
-        }
-
-        String dateValue = value.toString().trim();
-
-        try {
-            return LocalDateTime.parse(dateValue);
-        } catch (Exception ignored) {
-            // Try offset date-time.
-        }
-
-        try {
-            return OffsetDateTime.parse(dateValue).toLocalDateTime();
-        } catch (Exception ignored) {
-            // Try Catalyst date-time format.
-        }
-
-        try {
-            return LocalDateTime.parse(dateValue, DATE_FORMAT);
-        } catch (Exception ignored) {
-            return LocalDateTime.parse(
-                    dateValue.replaceFirst(" ", "T"));
-        }
+        return CatalystDateTimes.parse(value);
     }
 }

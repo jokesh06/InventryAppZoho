@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import com.example.demo.entity.Warehouse;
+import com.example.demo.util.CatalystDateTimes;
 import com.example.demo.entity.InventoryBalance;
 import com.example.demo.entity.Product;
 import org.springframework.stereotype.Repository;
@@ -232,17 +233,7 @@ public class InventoryBalanceRepository {
     }
 
     private LocalDateTime toDateTime(Object value) {
-
-        if (value == null) {
-            return null;
-        }
-
-        if (value instanceof LocalDateTime) {
-            return (LocalDateTime) value;
-        }
-
-        return LocalDateTime.parse(
-                value.toString().replace(" ", "T"));
+        return CatalystDateTimes.parse(value);
     }
     
 public InventoryBalance save(InventoryBalance balance) {

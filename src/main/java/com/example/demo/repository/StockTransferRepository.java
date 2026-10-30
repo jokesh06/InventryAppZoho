@@ -1,9 +1,7 @@
 
 package com.example.demo.repository;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,6 +20,7 @@ import com.example.demo.entity.StockTransfer;
 import com.example.demo.entity.StockTransfer.TransferStatus;
 import com.example.demo.entity.Warehouse;
 import com.example.demo.entity.User;
+import com.example.demo.util.CatalystDateTimes;
 
 import com.zc.component.object.ZCRowObject;
 import com.zc.component.zcql.ZCQL;
@@ -144,41 +143,7 @@ public class StockTransferRepository {
 
     // Convert Catalyst date-time into LocalDateTime
     private LocalDateTime toDateTime(Object value) {
-
-        if (value == null) {
-            return null;
-        }
-
-        if (value instanceof LocalDateTime) {
-            return (LocalDateTime) value;
-        }
-
-        if (value instanceof Timestamp) {
-            return ((Timestamp) value).toLocalDateTime();
-        }
-
-        if (value instanceof java.util.Date) {
-            return new Timestamp(
-                    ((java.util.Date) value).getTime())
-                    .toLocalDateTime();
-        }
-
-        String dateValue = value.toString().trim();
-
-        try {
-            return LocalDateTime.parse(dateValue);
-        } catch (Exception ignored) {
-            // Try offset date-time.
-        }
-
-        try {
-            return OffsetDateTime.parse(dateValue).toLocalDateTime();
-        } catch (Exception ignored) {
-            // Try date-time with a space separator.
-        }
-
-        return LocalDateTime.parse(
-                dateValue.replaceFirst(" ", "T"));
+        return CatalystDateTimes.parse(value);
     }
     public Optional<StockTransfer> findById(Long id) {
 

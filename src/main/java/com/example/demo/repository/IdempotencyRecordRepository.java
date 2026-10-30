@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Repository;
 
 import com.example.demo.entity.IdempotencyRecord;
+import com.example.demo.util.CatalystDateTimes;
 import com.zc.component.object.ZCRowObject;
 import com.zc.component.zcql.ZCQL;
 
@@ -69,15 +70,6 @@ public class IdempotencyRecordRepository {
     }
 
     private LocalDateTime toDateTime(Object value) {
-        if (value == null) {
-            return null;
-        }
-
-        if (value instanceof LocalDateTime) {
-            return (LocalDateTime) value;
-        }
-
-        return LocalDateTime.parse(
-                value.toString().replace(" ", "T"));
+        return CatalystDateTimes.parse(value);
     }
 }

@@ -1,9 +1,7 @@
 
 package com.example.demo.repository;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -21,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.demo.entity.InventoryMovement;
 import com.example.demo.entity.User;
 import com.example.demo.entity.User.Role;
+import com.example.demo.util.CatalystDateTimes;
 
 import com.zc.component.object.ZCRowObject;
 import com.zc.component.zcql.ZCQL;
@@ -348,41 +347,7 @@ Pageable pageable = PageRequest.of(
 
     // Convert Catalyst date-time to LocalDateTime
     private LocalDateTime toDateTime(Object value) {
-
-        if (value == null) {
-            return null;
-        }
-
-        if (value instanceof LocalDateTime) {
-            return (LocalDateTime) value;
-        }
-
-        if (value instanceof Timestamp) {
-            return ((Timestamp) value).toLocalDateTime();
-        }
-
-        if (value instanceof java.util.Date) {
-            return new Timestamp(
-                    ((java.util.Date) value).getTime())
-                    .toLocalDateTime();
-        }
-
-        String dateValue = value.toString().trim();
-
-        try {
-            return LocalDateTime.parse(dateValue);
-        } catch (Exception ignored) {
-            // Try offset date-time.
-        }
-
-        try {
-            return OffsetDateTime.parse(dateValue).toLocalDateTime();
-        } catch (Exception ignored) {
-            // Try space-separated date-time.
-        }
-
-        return LocalDateTime.parse(
-                dateValue.replaceFirst(" ", "T"));
+        return CatalystDateTimes.parse(value);
     }
     public Optional<User> findById(Long id) {
 
