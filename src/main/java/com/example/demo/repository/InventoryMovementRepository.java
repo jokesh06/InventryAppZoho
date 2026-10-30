@@ -47,12 +47,9 @@ public class InventoryMovementRepository {
            ) {
             Pageable pageable = PageRequest.of(
         Math.max(page, 0),
-        Math.min(Math.max(size, 1), 100),
-        Sort.by(
-                Sort.Direction.DESC,
-                TypedPropertyPath.of(InventoryMovement::getTimestamp)
-        )
-);
+        Math.min(Math.max(size, 1), 100));
+        
+
 
         if (pageable == null) {
             throw new IllegalArgumentException("Pageable cannot be null");
@@ -74,12 +71,12 @@ public class InventoryMovementRepository {
 
             if (startDate != null) {
                 conditions.add(
-                        "timestamp >= '" + formatDate(startDate) + "'");
+                        "movement_timestamp >= '" + formatDate(startDate) + "'");
             }
 
             if (endDate != null) {
                 conditions.add(
-                        "timestamp <= '" + formatDate(endDate) + "'");
+                        "movement_timestamp <= '" + formatDate(endDate) + "'");
             }
 
             if (!conditions.isEmpty()) {
@@ -87,7 +84,7 @@ public class InventoryMovementRepository {
                 query.append(String.join(" AND ", conditions));
             }
 
-            query.append(" ORDER BY timestamp DESC");
+            query.append(" ORDER BY movement_timestamp DESC");
 
             // Fetch all matching rows in batches of 300.
             // Catalyst SELECT * has a 300-row limit per query.
@@ -119,7 +116,7 @@ public class InventoryMovementRepository {
     public List<InventoryMovement> findTop10ByOrderByTimestampDesc() {
 
         String query = "SELECT * FROM " + TABLE_NAME
-                + " ORDER BY timestamp DESC LIMIT 10";
+                + " ORDER BY CREATEDTIME  DESC LIMIT 10";
 
         try {
             ArrayList<ZCRowObject> rows =
@@ -224,7 +221,7 @@ public class InventoryMovementRepository {
                         toStringValue(row.get("reference_document")))
                 .reason(toStringValue(row.get("reason")))
                 .user(user)
-                .timestamp(toDateTime(row.get("timestamp")))
+                .timestamp(toDateTime(row.get("movement_timestamp")))
                 .build();
     }
 
@@ -338,7 +335,7 @@ public InventoryMovement save(InventoryMovement movement) {
             "INSERT INTO inventory_movements "
             + "(movement_type, product_id, warehouse_id, "
             + "on_hand_change, reserved_change, "
-            + "reference_document, reason, user_id, timestamp) "
+            + "reference_document, reason, user_id, movement_timestamp) "
             + "VALUES ("
             + "'" + movementType + "', "
             + productId + ", "
