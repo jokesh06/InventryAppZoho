@@ -45,6 +45,7 @@ public class PurchaseOrder {
         SUBMITTED,
         PARTIALLY_RECEIVED,
         RECEIVED,
-        CANCELLED
+        CANCELLED,
+        APPROVED
     }
 }

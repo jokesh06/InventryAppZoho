@@ -41,7 +41,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(
             @Valid @RequestBody LoginRequest loginRequest) {
-
+System.out.println("LOGIN CONTROLLER REACHED");
         try {
         final Logger log =
         LoggerFactory.getLogger(AuthController.class);

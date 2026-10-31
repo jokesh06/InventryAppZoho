@@ -50,6 +50,8 @@ public class SalesOrder {
         CONFIRMED,
         SHIPPED,
         DELIVERED,
-        CANCELLED
+        CANCELLED,
+        PENDING,
+        PROCESSING
     }
 }

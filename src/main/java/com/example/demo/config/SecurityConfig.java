@@ -52,7 +52,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+               
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -73,24 +73,42 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:*",
-                "http://127.0.0.1:*",
-                "https://localhost:*",
-                "https://127.0.0.1:*"
-        ));
-        configuration.setAllowedMethods(List.of(
-                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setExposedHeaders(List.of("Authorization"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
+//     @Bean
+// public CorsConfigurationSource corsConfigurationSource() {
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
+//     CorsConfiguration configuration = new CorsConfiguration();
+
+//     configuration.setAllowedOrigins(List.of(
+//         "https://inventryprojectmicroservices-1-60093748731.development.catalystserverless.in"
+//     ));
+
+//     configuration.setAllowedMethods(List.of(
+//         "GET",
+//         "POST",
+//         "PUT",
+//         "PATCH",
+//         "DELETE",
+//         "OPTIONS"
+//     ));
+
+//     configuration.setAllowedHeaders(List.of(
+//         "Authorization",
+//         "Content-Type",
+//         "Accept",
+//         "Origin"
+//     ));
+
+//     configuration.setExposedHeaders(List.of(
+//         "Authorization"
+//     ));
+
+//     configuration.setAllowCredentials(false);
+
+//     UrlBasedCorsConfigurationSource source =
+//         new UrlBasedCorsConfigurationSource();
+
+//     source.registerCorsConfiguration("/**", configuration);
+
+//     return source;
+// }
 }
