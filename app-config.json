@@ -2,7 +2,15 @@
     "command": "java -jar inventory-catalyst-0.0.1-SNAPSHOT.jar",
     "build_path": "target",
     "stack": "java17",
-    "env_variables": {},
+    "env_variables": {
+        "CATALYST_SDK_MODE": "appsail",
+        "CORS_ALLOWED_ORIGINS": "http://localhost:3000,http://localhost:5173,https://inventryprojectmicroservices-1-60093748731.development.catalystserverless.in",
+        "X_ZOHO_CATALYST_LISTEN_PORT":9000,
+        "RESET_ADMIN_PASSWORD" :false,
+        "APP_ADMIN_USERNAME":"admin",
+        "APP_ADMIN_INITIAL_PASSWORD":false,
+        "JWT_SECRET":"fIk4ZzFdSQB1FOdE9aXvNpScYnyX1m0QGvPh/IVKzPc="
+    },
     "memory": 512,
     "scripts": {
         "preserve": "",
